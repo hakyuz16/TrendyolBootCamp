@@ -99,18 +99,14 @@ def modifiedModel(x, y,teta) -> np.ndarray:
         for i,v in enumerate(x):
             objective += (max(teta,np.abs(y[i] - y_pred[i])))**2 
             if  np.abs(y[i] - y_pred[i]) >= teta:
-                
-                
                 err = y[i] - y_pred[i]
                 g_b0 = g_b0 -2 * err
                 g_b1 = g_b1 -2 * err * v
             
-        
         g_b0 = (g_b0 / len(x))  +  2 * lam * beta[0]
         g_b1 = (g_b1 / len(x))  + 2 * lam * beta[1]
         
         objective = (objective / len(x) + ((beta[0]+ beta[1])**2))
-        
         
         print(f"({i}) beta: {beta}, gradient: {g_b0} {g_b1} obj: {objective}")
         beta_prev = np.copy(beta)
@@ -165,11 +161,13 @@ def performance(beta,X,y):
 
 st.header("Building a Simple Regression Model with Different Loss Function")
 st.markdown("""
- In the problem we assume below the some threshold error does not effect the performance:
+ In that problem I assume that for each data point if the prediction error below the specified threshold, that error is acceptable and does not effect the gradient:
  
- For example for a house with 5 price if prediction is between 4 and 6, prediction is okay,
- otherwise we should penalize deviation.
- In order to achieve this our objective function(loss function is changed)
+ For example for a house with price 5, if prediction is between 4 and 6, that prediction is okay,otherwise we should penalize deviation.
+ In order to achieve this our objective function(loss function) has changed
+ 
+ p.s: if you think my assumption is wrong, just change the >= to <= in code (line 101)
+ 
  New loss function is: 
  """)
 
@@ -184,12 +182,12 @@ st.latex(
     r"L(\beta_0,\beta_1)=\sum_{i=1}^{N}{(max(\Theta,(y_i - \hat{y}_i ))^2)/N + \lambda (\beta_0^2 + \beta_1^2)}")
 
 
-st.markdown("#### Partial derivatives")
+st.markdown("#### Partial Derivatives")
 
 st.markdown("""
-    we  should use chain rule  and backpropagation to explain the max function effect
-    
-    for example derivative of that function with respect to lambda is:
+     We  should use chain rule and backpropagation to explain the max function effect.
+     
+    For example derivative of that function with respect to lambda is:
             """)
 st.latex(
     r" y(\lambda) = max(\Theta,\lambda)")
@@ -198,8 +196,9 @@ st.latex(
     r"\frac{\partial y(\lambda)}{\partial \lambda} = \begin{cases} 1 &\text{if } \lambda > \Theta \\ 0 &\text{otherwise } \end{cases}")
             
 
-st.markdown("""Therefore if error is smaller than a specified threshold , it willl not effect the gradient 
-            for our cases we can calculate gradient like that:""")
+st.markdown("""Therefore if error is smaller than a specified threshold , it will not effect the gradient. 
+            For that case, we can calculate gradient like that:
+            """)
 
 st.latex( r"\qquad \qquad \Delta B_0 = 0  , \Delta B_1 = 0")
 st.latex( r"\text{for i in X:} ")
@@ -259,7 +258,7 @@ performance(beta, X_test, y_test)
 
 st.header("Performance Metrics for Modified Model ")
 
-teta = st.slider("teta value", 0.0, 1.0, value=0.4)
+teta = st.slider("Teta Value", 0.0, 1.0, value=0.4)
 
 st.header("Train performance")
 #apply simple linear regression (L2 regularize)
